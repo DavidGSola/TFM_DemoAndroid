@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="INDIGO_100">#C5CAE9</color>
+    <color name="INDIGO_500">#3f51b5</color>
+    <color name="INDIGO_700">#303F9F</color>
+
+    <color name="YELLOW_DARKEN_2">#fbc02d</color>
+
+    <color name="color_accent">@color/YELLOW_DARKEN_2</color>
+
+    <color name="toolbar_background">@color/INDIGO_500</color>
+
+</resources>
