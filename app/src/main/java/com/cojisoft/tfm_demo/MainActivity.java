@@ -1,19 +1,42 @@
 package com.cojisoft.tfm_demo;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    CardView cardCitara;
+    CardView cardEstanislao;
+    enum Figura {CITARA, ESTANISLAO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
+        cardCitara = (CardView)this.findViewById(R.id.portada_citara_card);
+        cardEstanislao = (CardView)this.findViewById(R.id.portada_estanislao_card);
+
+        cardCitara.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abrirActivityDetalle(Figura.CITARA);
+            }
+        });
+
+        cardEstanislao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abrirActivityDetalle(Figura.ESTANISLAO);
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -35,5 +58,13 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void abrirActivityDetalle(Figura figura)
+    {
+        Intent intent = new Intent(this, DetalleActivity.class);
+        intent.putExtra("figura", figura.toString());
+
+        startActivity(intent);
     }
 }

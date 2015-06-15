@@ -3,4 +3,14 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
+    <string name="citara_titulo">Muchacha tocando la cítara</string>
+    <string name="citara_lugar">Facultad de Medicina</string>
+    <string name="citara_descripcion">Escultura de escayola policromada realizada por J. Dupré y F. Goldscheider hacia el año 1900. Mide 90 centímetros de longitud. Su titularidad pertenece a la Universidad de Granada debido a la donación de Doña Maria Julia Castillo López a la Fundación de "San Francisco Javier y Santa Cándida" cuyo patronato los depositó en la Universidad en 1984. Actualmente se encuentra en la facultad de Medicina de la Universidad de Granada.</string>
+
+    <string name="estanislao_titulo">San Estanislao de Kostka</string>
+    <string name="estanislao_lugar">Facultad de Derecho</string>
+    <string name="estanislao_descripcion">Escultura de madera policromada. No se conoce autor de la obra aunque se sabe que fue realizada a mediados del siglo XVII. Mide 33 x 22 cm y pertenece al patrimonio de la Universidad de Granada tras ser "heredado" al ocupar la Universidad el antiguo Colegio de San Pablo, tras la expulsión de los jesuitas. </string>
+
 </resources>
