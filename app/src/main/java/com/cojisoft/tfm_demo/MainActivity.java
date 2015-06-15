@@ -11,9 +11,10 @@ import android.view.View;
 
 public class MainActivity extends ActionBarActivity {
 
+    enum Figura {CITARA, ESTANISLAO};
+
     CardView cardCitara;
     CardView cardEstanislao;
-    enum Figura {CITARA, ESTANISLAO};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

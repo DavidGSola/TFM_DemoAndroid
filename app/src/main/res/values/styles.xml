@@ -2,6 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
         <item name="colorPrimary">@color/INDIGO_500</item>
         <item name="colorPrimaryDark">@color/INDIGO_700</item>
         <item name="colorAccent">@color/INDIGO_100</item>

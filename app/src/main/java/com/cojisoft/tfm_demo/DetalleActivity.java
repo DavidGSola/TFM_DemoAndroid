@@ -5,12 +5,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
  * Created by DavidGSola on 15/06/2015.
  */
 public class DetalleActivity extends ActionBarActivity{
+
+    ImageView imagen;
 
     TextView titulo;
     TextView lugar;
@@ -26,6 +29,7 @@ public class DetalleActivity extends ActionBarActivity{
         Bundle extras = getIntent().getExtras();
         String figura = extras.getString("figura");
 
+        imagen = (ImageView) findViewById(R.id.detalle_imagen);
         titulo = (TextView) findViewById(R.id.detalle_titulo);
         lugar = (TextView) findViewById(R.id.detalle_lugar);
         descripcion = (TextView) findViewById(R.id.detalle_descripcion);
@@ -33,7 +37,7 @@ public class DetalleActivity extends ActionBarActivity{
         if(figura.equals("CITARA"))
         {
             actionBar.setTitle(getString(R.string.citara_titulo));
-
+            imagen.setImageResource(R.drawable.portada_citara);
             titulo.setText(getString(R.string.citara_titulo));
             lugar.setText(getString(R.string.citara_lugar));
             descripcion.setText(getString(R.string.citara_descripcion));
@@ -41,6 +45,7 @@ public class DetalleActivity extends ActionBarActivity{
         {
             actionBar.setTitle(getString(R.string.estanislao_titulo));
 
+            imagen.setImageResource(R.drawable.portada_estanislao);
             titulo.setText(getString(R.string.estanislao_titulo));
             lugar.setText(getString(R.string.estanislao_lugar));
             descripcion.setText(getString(R.string.estanislao_descripcion));
