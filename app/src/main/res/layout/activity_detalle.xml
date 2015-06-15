@@ -103,10 +103,12 @@
 
 
         <Button
+            android:id="@+id/detalle_boton"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:backgroundTint="@color/INDIGO_100"
             android:text="Comenzar"/>
 
     </LinearLayout>
