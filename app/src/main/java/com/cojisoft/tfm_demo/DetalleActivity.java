@@ -1,6 +1,7 @@
 package com.cojisoft.tfm_demo;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -10,12 +11,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Created by DavidGSola on 15/06/2015.
  */
-public class DetalleActivity extends ActionBarActivity implements View.OnClickListener{
+public class DetalleActivity extends ActionBarActivity implements View.OnClickListener {
 
     ImageView imagen;
 
@@ -43,15 +53,13 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
         lugar = (TextView) findViewById(R.id.detalle_lugar);
         descripcion = (TextView) findViewById(R.id.detalle_descripcion);
 
-        if(figura.equals("CITARA"))
-        {
+        if (figura.equals("CITARA")) {
             actionBar.setTitle(getString(R.string.citara_titulo));
             imagen.setImageResource(R.drawable.portada_citara);
             titulo.setText(getString(R.string.citara_titulo));
             lugar.setText(getString(R.string.citara_lugar));
             descripcion.setText(getString(R.string.citara_descripcion));
-        }else if(figura.equals("ESTANISLAO"))
-        {
+        } else if (figura.equals("ESTANISLAO")) {
             actionBar.setTitle(getString(R.string.estanislao_titulo));
 
             imagen.setImageResource(R.drawable.portada_estanislao);
@@ -90,10 +98,48 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
 
 
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(this, "HEY", Toast.LENGTH_SHORT).show();
+        String URL = "http://192.168.1.108:8080/TFM_Servidor/Lanzador";
+        new RetrieveFeedTask().execute();
+
         Intent intent = new Intent(this, ResultadoActivity.class);
         startActivity(intent);
+    }
+
+    class RetrieveFeedTask extends AsyncTask<String, String, String> {
+
+        private Exception exception;
+
+        protected String doInBackground(String... urls) {
+            String caca = "hola";
+
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpResponse response = null;
+                try {
+                    response = httpclient.execute(new HttpGet("http://192.168.1.108:8080/TFM_Servidor/Lanzador"));
+
+                    StatusLine statusLine = response.getStatusLine();
+                    if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        response.getEntity().writeTo(out);
+                        String responseString = out.toString();
+                        out.close();
+                        //..more logic
+                    } else {
+                        //Closes the connection.
+                        response.getEntity().getContent().close();
+                        throw new IOException(statusLine.getReasonPhrase());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                this.exception = e;
+            }
+            return caca;
+        }
     }
 }

@@ -81,5 +81,10 @@ public class ResultadoActivity extends FragmentActivity {
         public int getCount() {
             return NUM_PAGES;
         }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "OBJECT " + (position + 1);
+        }
     }
 }
