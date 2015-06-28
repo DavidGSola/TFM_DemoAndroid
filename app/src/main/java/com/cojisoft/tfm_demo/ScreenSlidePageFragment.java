@@ -1,19 +1,3 @@
-/*
- * Copyright 2012 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.cojisoft.tfm_demo;
 
 import android.content.Context;
@@ -28,23 +12,40 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+/**
+ * Clase que hereda de Fragment para representar una imagen en un  ScreenSlidePage. Cada fragmento
+ * de eeste tipo se representa por un número de página y una ruta absoluta a la imagen que
+ * debe mostrar
+ */
 public class ScreenSlidePageFragment extends Fragment {
     /**
-     * The argument key for the page number this fragment represents.
+     * La clave para el número de página de este fragmento
      */
     public static final String ARG_PAGE = "page";
 
+    /**
+     * La clave para la ruta absoluta de la imagen de este fragmento
+     */
     public static final String ARG_PATH = "path";
 
     /**
-     * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
+     * Número del fragmento, se setea al argumento dado por {@link #ARG_PAGE}.
      */
     private int mPageNumber;
 
+    /**
+     * Ruta absoluta de la imagen del fragmento, se setea al argumento dado por {@link #ARG_PATH}.
+     */
     private String mPathFile;
 
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
+     */
+    /**
+     * Método factoría para esta clase fragmento. Construye un nuevo fragmento para el número de página dada y el pathFile
+     * @param pageNumber Número de página del fragmento
+     * @param pathFile Ruta de la imagen a mostrar
+     * @return Fragmento creado
      */
     public static ScreenSlidePageFragment create(int pageNumber, String pathFile) {
         ScreenSlidePageFragment fragment = new ScreenSlidePageFragment();
@@ -68,21 +69,16 @@ public class ScreenSlidePageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        // Inflate the layout containing a title and body text.
-        ViewGroup rootView = (ViewGroup) inflater
-                .inflate(R.layout.fragment_screen_slide_page, container, false);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
 
         ImageView imagenView = (ImageView) rootView.findViewById(R.id.resultado_imagen);
         if(mPageNumber == 0) {
+            Bitmap bitmapOriginal = BitmapFactory.decodeFile(mPathFile);
 
             // Escalamos la imagen
-            WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            int width = display.getWidth();  // deprecated
-            Bitmap myBitmap = BitmapFactory.decodeFile(mPathFile);
-            int scaledHeight = (width*myBitmap.getHeight())/myBitmap.getWidth();
-            Bitmap pq= Bitmap.createScaledBitmap(myBitmap,width, scaledHeight, true);
-            imagenView.setImageBitmap(pq);
+            Bitmap bitmapEscalado = escalarBitmap(bitmapOriginal);
+
+            imagenView.setImageBitmap(bitmapEscalado);
             imagenView.setScaleType(ImageView.ScaleType.FIT_XY);
         }
         else
@@ -92,7 +88,21 @@ public class ScreenSlidePageFragment extends Fragment {
     }
 
     /**
-     * Returns the page number represented by this fragment object.
+     * Devuelve un bitmap escalado al tamaño de la pantalla
+     * @param bm Bitmap a escalar
+     * @return Bitmap escalado al tamaño de la pantalla
+     */
+    private Bitmap escalarBitmap(Bitmap bm)
+    {
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int width = display.getWidth();  // deprecated
+        int scaledHeight = (width*bm.getHeight())/bm.getWidth();
+        return Bitmap.createScaledBitmap(bm,width, scaledHeight, true);
+    }
+
+    /**
+     * Devuelve el número de página que representa este Fragment
      */
     public int getPageNumber() {
         return mPageNumber;

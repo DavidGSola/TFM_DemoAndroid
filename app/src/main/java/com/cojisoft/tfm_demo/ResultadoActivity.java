@@ -15,22 +15,29 @@ import android.view.MenuItem;
  */
 public class ResultadoActivity extends FragmentActivity {
     /**
-     * The number of pages (wizard steps) to show in this demo.
+     * El número de páginas a mostrar en la actividad
      */
     private static final int NUM_PAGES = 2;
 
     /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
+     * El ViewPager que se encarga de maejar las animaciones y que permite realizar un slide
+     * horizontal para cambiar entre páginas
      */
     private ViewPager mPager;
 
     /**
-     * The pager adapter, which provides the pages to the view pager widget.
+     * El PageAdapter, que aporta las páginas que se mostrarán en el ViewPager
      */
     private PagerAdapter mPagerAdapter;
 
+    /**
+     * Ruta absoluta a la imagen base que se mostrará en la primera página
+     */
     private String pathImagenBase = "";
+
+    /**
+     * Ruta absoluta a la imagen del modelo que se mostrará en la segunda página
+     */
     private String pathImagenModelo = "";
 
     @Override
@@ -41,7 +48,7 @@ public class ResultadoActivity extends FragmentActivity {
         Bundle extras = getIntent().getExtras();
         pathImagenBase = extras.getString("pathBase");
 
-        // Instantiate a ViewPager and a PagerAdapter.
+        // Instancia el ViewPager y el PagerAdapater
         mPager = (ViewPager) findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
@@ -49,16 +56,12 @@ public class ResultadoActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -70,8 +73,7 @@ public class ResultadoActivity extends FragmentActivity {
     }
 
     /**
-     * A simple pager adapter that represents 5 {@link ScreenSlidePageFragment} objects, in
-     * sequence.
+     * PagerAdapter que representa 2 {@link ScreenSlidePageFragment} objetos en secuencia
      */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
