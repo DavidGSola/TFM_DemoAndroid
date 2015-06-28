@@ -30,10 +30,16 @@ public class ResultadoActivity extends FragmentActivity {
      */
     private PagerAdapter mPagerAdapter;
 
+    private String pathImagenBase = "";
+    private String pathImagenModelo = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resultado);
+
+        Bundle extras = getIntent().getExtras();
+        pathImagenBase = extras.getString("pathBase");
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -74,7 +80,8 @@ public class ResultadoActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return ScreenSlidePageFragment.create(position);
+            String path = position == 0 ? pathImagenBase : pathImagenModelo;
+            return ScreenSlidePageFragment.create(position, path);
         }
 
         @Override

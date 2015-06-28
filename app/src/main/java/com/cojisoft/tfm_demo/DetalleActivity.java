@@ -3,8 +3,10 @@ package com.cojisoft.tfm_demo;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,15 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Random;
 
 /**
  * Created by DavidGSola on 15/06/2015.
@@ -95,51 +95,105 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
     public void onClick(View view) {
         Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
         startActivityForResult(intent, 0);
-
-
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String URL = "http://192.168.1.108:8080/TFM_Servidor/Lanzador";
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        // Se lanza una hebra asíncrona para enviar la imagen al servidor
         new RetrieveFeedTask().execute();
-
-        Intent intent = new Intent(this, ResultadoActivity.class);
-        startActivity(intent);
     }
 
-    class RetrieveFeedTask extends AsyncTask<String, String, String> {
-
-        private Exception exception;
-
-        protected String doInBackground(String... urls) {
-            String caca = "hola";
-
-            try {
-                HttpClient httpclient = new DefaultHttpClient();
-                HttpResponse response = null;
-                try {
-                    response = httpclient.execute(new HttpGet("http://192.168.1.108:8080/TFM_Servidor/Lanzador"));
-
-                    StatusLine statusLine = response.getStatusLine();
-                    if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        response.getEntity().writeTo(out);
-                        String responseString = out.toString();
-                        out.close();
-                        //..more logic
-                    } else {
-                        //Closes the connection.
-                        response.getEntity().getContent().close();
-                        throw new IOException(statusLine.getReasonPhrase());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                this.exception = e;
-            }
-            return caca;
+    class RetrieveFeedTask extends AsyncTask<String, String, Integer> {
+        protected Integer doInBackground(String... urls) {
+            return UploadFile();
         }
+    }
+
+    /**
+     * Envía una imagen al servidor donde se procesará
+     * @return 0 -> todo OK
+     *         -1 -> Error
+     */
+    public int UploadFile(){
+        HttpURLConnection connection = null;
+        DataOutputStream outputStream = null;
+        DataInputStream inputStream = null;
+
+        Random randomGenerator = new Random();
+        int randomInt = randomGenerator.nextInt(2);
+        Log.v("CACA", randomInt + "");
+        String nombreFichero = randomInt == 0 ? "cita1_negra.bmp" : "cita2_negra.bmp";
+        String pathArchivo = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + nombreFichero;
+        String urlServer = "http://192.168.1.108:8080/TFM_Servidor/Lanzador";
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary =  "*****";
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1*1024*1024;
+
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(new File(pathArchivo) );
+
+            URL url = new URL(urlServer);
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Allow Inputs &amp; Outputs.
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setUseCaches(false);
+
+            // Set HTTP method to POST.
+            connection.setRequestMethod("POST");
+
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            connection.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
+
+            outputStream = new DataOutputStream( connection.getOutputStream() );
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + pathArchivo +"\"" + lineEnd);
+            outputStream.writeBytes(lineEnd);
+
+            bytesAvailable = fileInputStream.available();
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // Leer fichero
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            while (bytesRead > 0)
+            {
+                outputStream.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            }
+
+            outputStream.writeBytes(lineEnd);
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            // Respuesta del servidor (código y mensaje)
+            int serverResponseCode = connection.getResponseCode();
+            String serverResponseMessage = connection.getResponseMessage();
+
+            fileInputStream.close();
+            outputStream.flush();
+            outputStream.close();
+        }
+        catch (Exception ex)
+        {
+            Log.e("Err", ex.toString());
+            return -1;
+        }
+
+        // Se lanza la actividad detalle
+        Intent intent = new Intent(this, ResultadoActivity.class);
+        intent.putExtra("pathBase", pathArchivo);
+        startActivity(intent);
+
+        return 0;
     }
 }

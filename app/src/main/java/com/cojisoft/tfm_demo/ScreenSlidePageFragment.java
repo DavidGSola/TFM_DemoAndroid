@@ -16,11 +16,16 @@
 
 package com.cojisoft.tfm_demo;
 
-import android.support.v4.app.Fragment;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 public class ScreenSlidePageFragment extends Fragment {
@@ -29,18 +34,23 @@ public class ScreenSlidePageFragment extends Fragment {
      */
     public static final String ARG_PAGE = "page";
 
+    public static final String ARG_PATH = "path";
+
     /**
      * The fragment's page number, which is set to the argument value for {@link #ARG_PAGE}.
      */
     private int mPageNumber;
 
+    private String mPathFile;
+
     /**
      * Factory method for this fragment class. Constructs a new fragment for the given page number.
      */
-    public static ScreenSlidePageFragment create(int pageNumber) {
+    public static ScreenSlidePageFragment create(int pageNumber, String pathFile) {
         ScreenSlidePageFragment fragment = new ScreenSlidePageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, pageNumber);
+        args.putString(ARG_PATH, pathFile);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,6 +62,7 @@ public class ScreenSlidePageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPageNumber = getArguments().getInt(ARG_PAGE);
+        mPathFile = getArguments().getString(ARG_PATH);
     }
 
     @Override
@@ -62,8 +73,18 @@ public class ScreenSlidePageFragment extends Fragment {
                 .inflate(R.layout.fragment_screen_slide_page, container, false);
 
         ImageView imagenView = (ImageView) rootView.findViewById(R.id.resultado_imagen);
-        if(mPageNumber == 0)
-            imagenView.setImageResource(R.drawable.ejemplo_real);
+        if(mPageNumber == 0) {
+
+            // Escalamos la imagen
+            WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            int width = display.getWidth();  // deprecated
+            Bitmap myBitmap = BitmapFactory.decodeFile(mPathFile);
+            int scaledHeight = (width*myBitmap.getHeight())/myBitmap.getWidth();
+            Bitmap pq= Bitmap.createScaledBitmap(myBitmap,width, scaledHeight, true);
+            imagenView.setImageBitmap(pq);
+            imagenView.setScaleType(ImageView.ScaleType.FIT_XY);
+        }
         else
             imagenView.setImageResource(R.drawable.ejemplo_virtual);
 
