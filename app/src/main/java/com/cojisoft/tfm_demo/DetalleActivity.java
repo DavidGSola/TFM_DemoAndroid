@@ -168,9 +168,10 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
         if (figura.equals("citara"))
             nombreFichero = randomInt == 0 ? "cita1_negra.bmp" : "cita2_negra.bmp";
         else if (figura.equals("estanislao"))
-            nombreFichero = randomInt == 0 ? "esta1_negra.bmp" : "esta2_negra.bmp";
+            nombreFichero = randomInt == 0 ? "esta1_negra.bmp" : "esta5_negra.bmp";
 
         String pathBase = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + nombreFichero;
+        Log.v("CACA", pathBase);
         String pathModelo = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + "respuesta.png";
         String urlServer = "http://192.168.1.108:8080/TFM_Servidor/Lanzador";
         String lineEnd = "\r\n";
