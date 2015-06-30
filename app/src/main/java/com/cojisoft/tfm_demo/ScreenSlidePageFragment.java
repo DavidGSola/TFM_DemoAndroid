@@ -72,17 +72,13 @@ public class ScreenSlidePageFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
 
         ImageView imagenView = (ImageView) rootView.findViewById(R.id.resultado_imagen);
-        if(mPageNumber == 0) {
-            Bitmap bitmapOriginal = BitmapFactory.decodeFile(mPathFile);
+        Bitmap bitmapOriginal = BitmapFactory.decodeFile(mPathFile);
 
-            // Escalamos la imagen
-            Bitmap bitmapEscalado = escalarBitmap(bitmapOriginal);
+        // Escalamos la imagen
+        Bitmap bitmapEscalado = escalarBitmap(bitmapOriginal);
 
-            imagenView.setImageBitmap(bitmapEscalado);
-            imagenView.setScaleType(ImageView.ScaleType.FIT_XY);
-        }
-        else
-            imagenView.setImageResource(R.drawable.ejemplo_virtual);
+        imagenView.setImageBitmap(bitmapEscalado);
+        imagenView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         return rootView;
     }

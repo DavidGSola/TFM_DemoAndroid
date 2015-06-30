@@ -12,12 +12,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Random;
@@ -33,6 +37,18 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
     TextView lugar;
     TextView descripcion;
 
+    ImageView icTitulo;
+    ImageView icLugar;
+    ImageView icDescripcion;
+
+    View separador1;
+    View separador2;
+
+    ProgressBar spinner;
+    TextView tituloSpinner;
+
+    String figura;
+
     Button boton;
 
     @Override
@@ -43,23 +59,36 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
         ActionBar actionBar = (ActionBar) getSupportActionBar();
 
         Bundle extras = getIntent().getExtras();
-        String figura = extras.getString("figura");
+        figura = extras.getString("figura");
 
         boton = (Button) findViewById(R.id.detalle_boton);
         boton.setOnClickListener(this);
+
+        spinner = (ProgressBar) findViewById(R.id.detalle_progress);
+        spinner.setVisibility(View.GONE);
+
+        tituloSpinner = (TextView) findViewById(R.id.detalle_titulo_progress);
+        tituloSpinner.setVisibility(View.GONE);
+
+        icTitulo = (ImageView) findViewById(R.id.detalle_titulo_ic);
+        icLugar = (ImageView) findViewById(R.id.detalle_lugar_ic);
+        icDescripcion = (ImageView) findViewById(R.id.detalle_descripcion_ic);
+
+        separador1 = (View) findViewById(R.id.detalle_separator_1);
+        separador2 = (View) findViewById(R.id.detalle_separator_2);
 
         imagen = (ImageView) findViewById(R.id.detalle_imagen);
         titulo = (TextView) findViewById(R.id.detalle_titulo);
         lugar = (TextView) findViewById(R.id.detalle_lugar);
         descripcion = (TextView) findViewById(R.id.detalle_descripcion);
 
-        if (figura.equals("CITARA")) {
+        if (figura.equals("citara")) {
             actionBar.setTitle(getString(R.string.citara_titulo));
             imagen.setImageResource(R.drawable.portada_citara);
             titulo.setText(getString(R.string.citara_titulo));
             lugar.setText(getString(R.string.citara_lugar));
             descripcion.setText(getString(R.string.citara_descripcion));
-        } else if (figura.equals("ESTANISLAO")) {
+        } else if (figura.equals("estanislao")) {
             actionBar.setTitle(getString(R.string.estanislao_titulo));
 
             imagen.setImageResource(R.drawable.portada_estanislao);
@@ -100,6 +129,19 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        imagen.setVisibility(View.GONE);
+        titulo.setVisibility(View.GONE);
+        lugar.setVisibility(View.GONE);
+        descripcion.setVisibility(View.GONE);
+        boton.setVisibility(View.GONE);
+        icTitulo.setVisibility(View.GONE);
+        icLugar.setVisibility(View.GONE);
+        icDescripcion.setVisibility(View.GONE);
+        separador1.setVisibility(View.GONE);
+        separador2.setVisibility(View.GONE);
+
+        spinner.setVisibility(View.VISIBLE);
+        tituloSpinner.setVisibility(View.VISIBLE);
         // Se lanza una hebra asíncrona para enviar la imagen al servidor
         new RetrieveFeedTask().execute();
     }
@@ -122,9 +164,14 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
 
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(2);
-        Log.v("CACA", randomInt + "");
-        String nombreFichero = randomInt == 0 ? "cita1_negra.bmp" : "cita2_negra.bmp";
-        String pathArchivo = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + nombreFichero;
+        String nombreFichero = "";
+        if (figura.equals("citara"))
+            nombreFichero = randomInt == 0 ? "cita1_negra.bmp" : "cita2_negra.bmp";
+        else if (figura.equals("estanislao"))
+            nombreFichero = randomInt == 0 ? "esta1_negra.bmp" : "esta2_negra.bmp";
+
+        String pathBase = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + nombreFichero;
+        String pathModelo = Environment.getExternalStorageDirectory().toString()+"/DCIM/" + "respuesta.png";
         String urlServer = "http://192.168.1.108:8080/TFM_Servidor/Lanzador";
         String lineEnd = "\r\n";
         String twoHyphens = "--";
@@ -136,7 +183,7 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
 
         try
         {
-            FileInputStream fileInputStream = new FileInputStream(new File(pathArchivo) );
+            FileInputStream fileInputStream = new FileInputStream(new File(pathBase) );
 
             URL url = new URL(urlServer);
             connection = (HttpURLConnection) url.openConnection();
@@ -154,7 +201,7 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
 
             outputStream = new DataOutputStream( connection.getOutputStream() );
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + pathArchivo +"\"" + lineEnd);
+            outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + figura +"\"" + lineEnd);
             outputStream.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available();
@@ -178,7 +225,18 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
             // Respuesta del servidor (código y mensaje)
             int serverResponseCode = connection.getResponseCode();
             String serverResponseMessage = connection.getResponseMessage();
+            InputStream fileContent = connection.getInputStream();
 
+            OutputStream os = new FileOutputStream(pathModelo);
+
+            byte[] b = new byte[2048];
+            int length;
+
+            while ((length = fileContent.read(b)) != -1)
+                os.write(b, 0, length);
+
+            fileContent.close();
+            os.close();
             fileInputStream.close();
             outputStream.flush();
             outputStream.close();
@@ -191,7 +249,8 @@ public class DetalleActivity extends ActionBarActivity implements View.OnClickLi
 
         // Se lanza la actividad detalle
         Intent intent = new Intent(this, ResultadoActivity.class);
-        intent.putExtra("pathBase", pathArchivo);
+        intent.putExtra("pathBase", pathBase);
+        intent.putExtra("pathModelo", pathModelo);
         startActivity(intent);
 
         return 0;

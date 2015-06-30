@@ -47,6 +47,7 @@ public class ResultadoActivity extends FragmentActivity {
 
         Bundle extras = getIntent().getExtras();
         pathImagenBase = extras.getString("pathBase");
+        pathImagenModelo = extras.getString("pathModelo");
 
         // Instancia el ViewPager y el PagerAdapater
         mPager = (ViewPager) findViewById(R.id.pager);

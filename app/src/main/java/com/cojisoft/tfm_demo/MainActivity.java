@@ -64,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
     private void abrirActivityDetalle(Figura figura)
     {
         Intent intent = new Intent(this, DetalleActivity.class);
-        intent.putExtra("figura", figura.toString());
+        intent.putExtra("figura", figura.toString().toLowerCase());
 
         startActivity(intent);
     }
